@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Form</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+  <div class="bg-white p-6 rounded-2xl shadow-lg w-full max-w-md">
+    <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center">Apni Details Bharein</h2>
+    <p class="text-sm text-gray-500 text-center mb-6">Kripya apna naam aur WhatsApp number darj karein</p>
+    
+    <form id="qrForm" class="space-y-4">
+      <div>
+        <label class="block text-gray-700 font-medium mb-1">Naam (Name)</label>
+        <input type="text" id="name" required placeholder="Apna pura naam" 
+               class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <div>
+        <label class="block text-gray-700 font-medium mb-1">Mobile Number</label>
+        <input type="tel" id="phone" required pattern="[0-9]{10}" placeholder="10 digit mobile number" 
+               class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+
+      <button type="submit" id="submitBtn" 
+              class="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition">
+        Submit Karein
+      </button>
+    </form>
+
+    <div id="statusMessage" class="mt-4 text-center hidden font-medium"></div>
+  </div>
+
+  <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwKkVW1X5NEOO6oZzEsin_hWsLKBdJXEYYcyN3jXQtHty1LTJ1rdj8PjIk5IWiCnEJo/exec';
+
+    document.getElementById('qrForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submitBtn');
+      const statusMessage = document.getElementById('statusMessage');
+      
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Saving...';
+
+      const data = {
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value
+      };
+
+      fetch(scriptURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(res => {
+        statusMessage.innerText = 'Aapki details successfully save ho gayi hain!';
+        statusMessage.className = 'mt-4 text-center text-green-600 font-medium';
+        document.getElementById('qrForm').reset();
+      })
+      .catch(error => {
+        statusMessage.innerText = 'Kuch galat ho gaya, kripya dobara try karein.';
+        statusMessage.className = 'mt-4 text-center text-red-600 font-medium';
+      })
+      .finally(() => {
+        statusMessage.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Submit Karein';
+      });
+    });
+  </script>
+
+</body>
+</html>
